@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Confession Corner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@500;600;700&display=swap">
+<style>
+/* Layout: one soft card centred on a blush ground; a speech bubble above two birds facing each other, answer buttons beneath. */
+:root {
+  --bg: #fff0f4;
+  --bg-glow: #ffe0ec;
+  --card: #fffafb;
+  --ink: #4a2340;
+  --muted: #8b6a82;
+  --line: #f6d5e1;
+  --pink: #ff8fb1;
+  --pink-deep: #e0467a;
+  --on-pink: #ffffff;
+  --lilac: #e6dcff;
+  --lilac-ink: #5a3f9a;
+  --bubble: #ffffff;
+  --shadow: rgba(224, 70, 122, 0.16);
+  --font-display: "Baloo 2", "Trebuchet MS", system-ui, sans-serif;
+  --font-body: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* birds stay the same in both themes */
+  --d-body: #ffb3c8;
+  --d-belly: #fff1f5;
+  --d-wing: #ff8fb1;
+  --v-body: #b9d9ff;
+  --v-belly: #f2f8ff;
+  --v-wing: #8fbcf5;
+  --beak: #ffb347;
+  --eye: #3a1d33;
+  --leaf: #7fd6a4;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1f1124;
+    --bg-glow: #33183a;
+    --card: #2b1a32;
+    --ink: #ffe8f0;
+    --muted: #c9a9be;
+    --line: #4b2c55;
+    --pink: #ff8fb1;
+    --pink-deep: #ff7aa2;
+    --on-pink: #2b1224;
+    --lilac: #3d2c66;
+    --lilac-ink: #dccfff;
+    --bubble: #382240;
+    --shadow: rgba(0, 0, 0, 0.35);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1f1124;
+  --bg-glow: #33183a;
+  --card: #2b1a32;
+  --ink: #ffe8f0;
+  --muted: #c9a9be;
+  --line: #4b2c55;
+  --pink: #ff8fb1;
+  --pink-deep: #ff7aa2;
+  --on-pink: #2b1224;
+  --lilac: #3d2c66;
+  --lilac-ink: #dccfff;
+  --bubble: #382240;
+  --shadow: rgba(0, 0, 0, 0.35);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(60vmax 40vmax at 10% -10%, var(--bg-glow), transparent 60%),
+    radial-gradient(50vmax 40vmax at 100% 110%, var(--bg-glow), transparent 60%);
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  padding-inline: 16px;
+  padding-block: 28px 40px;
+  min-height: 100%;
+}
+.wrap { max-width: 460px; margin-inline: auto; display: flex; flex-direction: column; gap: 16px; }
+.brand {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pink-deep);
+  text-align: center;
+}
+.card {
+  background: var(--card);
+  border: 2px solid var(--line);
+  border-radius: 28px;
+  padding: 22px 18px 20px;
+  box-shadow: 0 14px 36px var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+/* progress */
+.dots { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+.dot { width: 22px; height: 8px; border-radius: 99px; background: var(--line); transition: background 0.3s; }
+.dot.done { background: var(--pink); }
+.dot.now { background: var(--pink-deep); }
+.count { text-align: center; font-size: 13px; color: var(--muted); font-weight: 700; letter-spacing: 0.04em; }
+
+/* speech bubble */
+.bubble {
+  position: relative;
+  background: var(--bubble);
+  border: 2px solid var(--line);
+  border-radius: 22px;
+  padding: 16px 18px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 21px;
+  line-height: 1.3;
+  text-wrap: balance;
+  text-align: center;
+  animation: pop 0.4s ease both;
+}
+.bubble::after {
+  content: "";
+  position: absolute;
+  left: 22%;
+  bottom: -11px;
+  width: 18px; height: 18px;
+  background: var(--bubble);
+  border-right: 2px solid var(--line);
+  border-bottom: 2px solid var(--line);
+  transform: rotate(45deg);
+  border-bottom-right-radius: 5px;
+}
+.bubble small { display: block; font-family: var(--font-body); font-size: 14px; font-weight: 600; color: var(--muted); margin-top: 6px; }
+
+/* birds */
+.stage { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; padding-inline: 4px; }
+.stage.solo { justify-content: flex-start; }
+.who { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 38%; max-width: 150px; min-width: 0; position: relative; }
+.bird { width: 100%; height: auto; display: block; animation: bob 2.8s ease-in-out infinite; overflow: visible; }
+.who.v .bird { transform: scaleX(-1); animation-delay: -1.2s; }
+.tag {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 14px;
+  padding: 1px 12px;
+  border-radius: 99px;
+  background: var(--lilac);
+  color: var(--lilac-ink);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.who.d .tag { background: var(--pink); color: var(--on-pink); }
+.wave .wing { transform-origin: 40px 62px; animation: wave 0.7s ease-in-out infinite alternate; }
+.who.v.wave .wing { animation-delay: -0.3s; }
+.wing { transform-origin: 40px 62px; }
+
+/* controls */
+.field { display: flex; flex-direction: column; gap: 8px; }
+label.lbl { font-weight: 700; font-size: 14px; color: var(--muted); }
+input[type="text"], textarea {
+  width: 100%;
+  font: inherit;
+  font-size: 17px;
+  color: var(--ink);
+  background: var(--bubble);
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  padding: 12px 14px;
+}
+textarea { resize: vertical; min-height: 84px; }
+input[type="text"]::placeholder, textarea::placeholder { color: var(--muted); opacity: 0.8; }
+input:focus-visible, textarea:focus-visible, button:focus-visible {
+  outline: 3px solid var(--pink-deep);
+  outline-offset: 2px;
+}
+.btn {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 19px;
+  color: var(--on-pink);
+  background: var(--pink-deep);
+  border: 0;
+  border-radius: 99px;
+  padding: 11px 26px;
+  cursor: pointer;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.12);
+  transition: transform 0.12s, box-shadow 0.12s, opacity 0.2s;
+  align-self: center;
+}
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12); }
+.btn[disabled] { opacity: 0.45; cursor: not-allowed; transform: none; }
+.btn.ghost { background: var(--lilac); color: var(--lilac-ink); box-shadow: none; font-size: 15px; padding: 7px 16px; }
+
+.opts { display: flex; flex-direction: column; gap: 10px; }
+.opt {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 1.35;
+  text-align: left;
+  color: var(--ink);
+  background: var(--bubble);
+  border: 2px solid var(--line);
+  border-radius: 18px;
+  padding: 13px 16px;
+  cursor: pointer;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  transition: transform 0.12s, border-color 0.15s, background 0.15s;
+  min-width: 0;
+}
+.opt:hover { border-color: var(--pink); transform: translateY(-2px); }
+.opt .ltr {
+  flex: none;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--lilac);
+  color: var(--lilac-ink);
+  display: grid; place-items: center;
+  font-family: var(--font-display);
+  font-size: 15px;
+}
+.opt.picked { border-color: var(--pink-deep); background: var(--pink); color: var(--on-pink); }
+.opt.picked .ltr { background: var(--on-pink); color: var(--pink-deep); }
+.opts.lock .opt { pointer-events: none; }
+.chips { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.chips .opt { justify-content: center; text-align: center; flex-direction: column; align-items: center; gap: 2px; font-size: 15px; padding: 12px 8px; }
+.chips .opt .em { font-size: 26px; line-height: 1; }
+.chips .opt.picked { transform: translateY(-2px); }
+
+.status { text-align: center; font-size: 14px; color: var(--muted); font-weight: 600; text-wrap: balance; }
+.hint { text-align: center; font-size: 13px; color: var(--muted); }
+
+/* hearts */
+.heart { position: absolute; top: 0; left: 50%; font-size: 20px; pointer-events: none; animation: rise 1s ease-out forwards; }
+
+@keyframes bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -5px; } }
+@keyframes pop { from { opacity: 0; transform: scale(0.94) translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes wave { from { rotate: -8deg; } to { rotate: -38deg; } }
+@keyframes rise { from { opacity: 1; transform: translate(-50%, 0) scale(0.8); } to { opacity: 0; transform: translate(calc(-50% + var(--dx, 0px)), -90px) scale(1.3); } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+@media (max-width: 380px) {
+  .bubble { font-size: 19px; }
+  .chips { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">Confession Corner</div>
+  <main class="card" id="card" aria-live="polite"></main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var QUESTIONS = [
+    { q: "Have you ever missed me secretly? 🥹", a: ["Yes, more than you know ❤️", "No, not really 😂"] },
+    { q: "Have you ever felt jealous because of me? 👀", a: ["Yes, secretly 🤭", "No, never 😂"] },
+    { q: "Would you give us another chance? ❤️", a: ["Yes, someday 💗", "No, we're better as we are 🤍"] },
+    { q: "Have you ever wanted to tell me something but stopped yourself? 🤫", a: ["Yes, many times 🥹", "No, I tell you everything."] },
+    { q: "Would you feel bad seeing me with someone else? 👀", a: ["Yes, honestly 💔", "No, I'd be happy for you"] },
+    { q: "What do you see me as in your future? 🤭❤️", a: ["My girlfriend or wife 💍", "My sister 🫶"] },
+    { q: "Which outfit do you think makes me look more like the girl you'd fall for? 🙈", a: ["Kurti — traditional and cute 🩷", "T-shirt — simple and adorable 🖤"] },
+    { q: "Have you ever compared another girl to me? 👀", a: ["Yes, secretly 🤭", "No, never."] },
+    { q: "If I stopped texting you first, would you miss me? 🥹", a: ["Yes, and I'd text you myself ❤️", "I'd wait for your message."] },
+    { q: "What's my worst habit that you don't like? 👀", a: ["Overthinking and getting upset easily 🥹", "Being stubborn and not listening sometimes 😂"] }
+  ];
+  var FEELINGS = [
+    { em: "🥰", t: "Loved it" },
+    { em: "😊", t: "It was fun" },
+    { em: "🥹", t: "It made me emotional" },
+    { em: "😅", t: "A little awkward" }
+  ];
+
+  var state = { screen: "name", name: "", i: 0, answers: [], feeling: "", note: "" };
+  var saveStatus = "idle";
+
+  var card = document.getElementById("card");
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function bird(kind) {
+    var d = kind === "d";
+    var body = d ? "var(--d-body)" : "var(--v-body)";
+    var belly = d ? "var(--d-belly)" : "var(--v-belly)";
+    var wing = d ? "var(--d-wing)" : "var(--v-wing)";
+    var deco = d
+      ? '<g><path d="M52 30 L38 20 Q34 32 46 36 Z" fill="var(--pink-deep)"/><path d="M60 30 L74 20 Q78 32 66 36 Z" fill="var(--pink-deep)"/><circle cx="56" cy="31" r="6" fill="var(--pink-deep)"/></g>'
+      : '<g><path d="M56 32 Q54 18 44 14 Q44 26 52 34 Z" fill="var(--leaf)"/><path d="M58 32 Q62 18 74 18 Q70 30 60 34 Z" fill="var(--leaf)"/></g>';
+    return '<svg class="bird" viewBox="0 0 120 120" role="img" aria-hidden="true">' +
+      '<path d="M50 102 L50 112 M44 112 L56 112 M72 102 L72 112 M66 112 L78 112" stroke="var(--beak)" stroke-width="4" stroke-linecap="round" fill="none"/>' +
+      deco +
+      '<ellipse cx="60" cy="68" rx="40" ry="37" fill="' + body + '"/>' +
+      '<ellipse cx="62" cy="82" rx="25" ry="19" fill="' + belly + '"/>' +
+      '<g class="wing"><ellipse cx="36" cy="74" rx="12" ry="19" transform="rotate(-18 36 74)" fill="' + wing + '"/></g>' +
+      '<ellipse cx="82" cy="72" rx="7" ry="4.5" fill="var(--pink)" opacity="0.55"/>' +
+      '<circle cx="74" cy="58" r="5.5" fill="var(--eye)"/><circle cx="76" cy="56" r="1.8" fill="#fff"/>' +
+      '<path d="M94 60 L111 67 L94 74 Z" fill="var(--beak)"/>' +
+      '</svg>';
+  }
+
+  function stage(waving, solo) {
+    var dh = '<div class="who d' + (waving ? " wave" : "") + '" id="dharaBird">' + bird("d") + '<span class="tag">Dhara</span></div>';
+    if (solo) return '<div class="stage solo">' + dh + "</div>";
+    return '<div class="stage">' + dh +
+      '<div class="who v' + (waving ? " wave" : "") + '">' + bird("v") + '<span class="tag">' + esc(state.name) + "</span></div></div>";
+  }
+
+  function dots() {
+    var h = '<div class="dots" aria-hidden="true">';
+    for (var k = 0; k < QUESTIONS.length; k++) {
+      h += '<span class="dot' + (k < state.i ? " done" : k === state.i ? " now" : "") + '"></span>';
+    }
+    return h + "</div>";
+  }
+
+  function render() {
+    var s = state.screen, h = "";
+    if (s === "name") {
+      h = '<div class="bubble">Hii! What\'s your name? 🐣</div>' +
+        stage(false, true) +
+        '<form class="field" id="nameForm" autocomplete="off">' +
+        '<label class="lbl" for="nameInput">Your name</label>' +
+        '<input type="text" id="nameInput" maxlength="30" placeholder="Type your name here" value="' + esc(state.name) + '">' +
+        '<button class="btn" id="nameGo" type="submit">Next 💗</button></form>';
+    } else if (s === "hello") {
+      h = '<div class="bubble">Hii ' + esc(state.name) + ', let\'s confess something today. 💌</div>' +
+        stage(true, false) +
+        '<button class="btn" id="startBtn" type="button">Start</button>' +
+        '<div class="hint">10 little questions. Be honest 🤍</div>';
+    } else if (s === "q") {
+      var q = QUESTIONS[state.i];
+      h = dots() + '<div class="count">Question ' + (state.i + 1) + " of " + QUESTIONS.length + "</div>" +
+        '<div class="bubble">' + esc(q.q) + "</div>" + stage(false, false) + '<div class="opts" id="opts">';
+      q.a.forEach(function (a, n) {
+        h += '<button type="button" class="opt" data-n="' + n + '"><span class="ltr">' + "AB".charAt(n) + "</span><span>" + esc(a) + "</span></button>";
+      });
+      h += "</div>";
+    } else if (s === "feel") {
+      h = '<div class="bubble">' + esc(state.name) + ', how did you feel playing this? 🥹</div>' + stage(false, false) +
+        '<div class="chips" id="chips">';
+      FEELINGS.forEach(function (f, n) {
+        h += '<button type="button" class="opt' + (state.feeling === f.t ? " picked" : "") + '" data-n="' + n + '"><span class="em">' + f.em + "</span><span>" + esc(f.t) + "</span></button>";
+      });
+      h += '</div><div class="field"><label class="lbl" for="noteInput">Anything you want to tell me? (optional)</label>' +
+        '<textarea id="noteInput" maxlength="500" placeholder="Write it here...">' + esc(state.note) + '</textarea></div>' +
+        '<button class="btn" id="sendBtn" type="button"' + (state.feeling ? "" : " disabled") + ">Send 💌</button>";
+    } else {
+      var msg;
+      if (saveStatus === "ok") msg = "Your answers have been sent to Dhara 💌";
+      else if (saveStatus === "idle") msg = "Sending your answers to Dhara…";
+      else msg = "Your answers couldn't be sent right now. Check your internet connection and try again later.";
+      h = '<div class="bubble">Byeee ' + esc(state.name) + '! Thank you for confessing 🥰<small>See you soon, little bird 🐦</small></div>' +
+        stage(true, false) + '<div class="status" id="saveStatus">' + esc(msg) + "</div>";
+    }
+    card.innerHTML = h;
+    bind();
+  }
+
+  function hearts() {
+    var host = document.getElementById("dharaBird");
+    if (!host) return;
+    for (var k = 0; k < 4; k++) {
+      var el = document.createElement("span");
+      el.className = "heart";
+      el.textContent = ["💗", "💖", "🩷", "✨"][k];
+      el.style.setProperty("--dx", (k - 1.5) * 22 + "px");
+      el.style.animationDelay = k * 90 + "ms";
+      host.appendChild(el);
+      (function (e) { setTimeout(function () { e.remove(); }, 1400); })(el);
+    }
+  }
+
+  function bind() {
+    var s = state.screen;
+    if (s === "name") {
+      var input = document.getElementById("nameInput");
+      input.focus();
+      document.getElementById("nameForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        var v = input.value.trim();
+        if (!v) { input.focus(); return; }
+        state.name = v;
+        state.screen = "hello";
+        render();
+      });
+    } else if (s === "hello") {
+      document.getElementById("startBtn").addEventListener("click", function () {
+        state.screen = "q";
+        state.i = 0;
+        state.answers = [];
+        render();
+      });
+    } else if (s === "q") {
+      var opts = document.getElementById("opts");
+      opts.addEventListener("click", function (e) {
+        var b = e.target.closest(".opt");
+        if (!b || opts.classList.contains("lock")) return;
+        opts.classList.add("lock");
+        b.classList.add("picked");
+        hearts();
+        var q = QUESTIONS[state.i];
+        state.answers.push({ q: q.q, a: q.a[+b.getAttribute("data-n")] });
+        setTimeout(function () {
+          if (state.i + 1 < QUESTIONS.length) {
+            state.i++;
+          } else {
+            state.screen = "feel";
+          }
+          render();
+        }, 650);
+      });
+    } else if (s === "feel") {
+      var chips = document.getElementById("chips");
+      var note = document.getElementById("noteInput");
+      var send = document.getElementById("sendBtn");
+      chips.addEventListener("click", function (e) {
+        var b = e.target.closest(".opt");
+        if (!b) return;
+        state.feeling = FEELINGS[+b.getAttribute("data-n")].t;
+        Array.prototype.forEach.call(chips.children, function (c) { c.classList.remove("picked"); });
+        b.classList.add("picked");
+        send.disabled = false;
+        hearts();
+      });
+      note.addEventListener("input", function () { state.note = note.value; });
+      send.addEventListener("click", function () {
+        state.note = note.value.trim();
+        state.screen = "bye";
+        saveStatus = "idle";
+        render();
+        save().then(function () {
+          var el = document.getElementById("saveStatus");
+          if (!el) return;
+          el.textContent = saveStatus === "ok"
+            ? "Your answers have been sent to Dhara 💌"
+            : "Your answers couldn't be sent right now. Check your internet connection and try again later.";
+        });
+      });
+    }
+  }
+
+  var FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLScigLgmzsUad-fa17SofniOrxOeRpAW5os9Es1NrNBYrJ5q1Q/formResponse";
+  var ENTRY = "entry.2020107216";
+
+  function summary() {
+    var lines = [
+      "Name: " + state.name,
+      "Felt playing: " + (state.feeling || "-"),
+      "Message: " + (state.note || "-"),
+      ""
+    ];
+    state.answers.forEach(function (x, n) {
+      lines.push((n + 1) + ". " + x.q + "\n   -> " + x.a);
+    });
+    return lines.join("\n");
+  }
+
+  function save() {
+    var body = new URLSearchParams();
+    body.append(ENTRY, summary());
+    return fetch(FORM_URL, { method: "POST", mode: "no-cors", body: body })
+      .then(function () { saveStatus = "ok"; })
+      .catch(function () { saveStatus = "failed"; });
+  }
+
+  /* ---------- start ---------- */
+  render();
+})();
+</script>
+</body>
+</html>
